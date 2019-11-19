@@ -7,9 +7,6 @@
 
 Criar um clone do clássico Asteroids em Pygame
 
-- https://github.com/fernandocassola
-- https://github.com/rpmcruz
-
 #### Descrição
 
 É um jogo de arcade em que o objetivo é destruir, a partir de uma nave triangular, os asteróides que se movimentam pelo espaço, sem se deixar ser atingido pelos seus fragmentos. 
@@ -18,7 +15,7 @@ Ou seja, se ele ficar junto à parede, a pessoa precisa de reiniciar o jogo. Est
 
 #### UI
 
-![UI] (https://upload.wikimedia.org/wikipedia/en/1/13/Asteroi1.png)
+![UI](https://upload.wikimedia.org/wikipedia/en/1/13/Asteroi1.png)
 
 ### Pacotes
 
