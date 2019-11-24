@@ -10,7 +10,7 @@ Criar um clone do clássico Asteroids em Pygame
 #### Descrição
 
 É um jogo de arcade em que o objetivo é destruir, a partir de uma nave triangular, os asteróides que se movimentam pelo espaço, sem se deixar ser atingido pelos seus fragmentos. 
-Cada nível começa com asteróides grandes que se movimentam em várias direções. Conseguindo disparar com os mesmos, estes separam-se em fragmentos menores, até ser possível fazer desaparecer completamente os fragmentos mais pequenos. Acabando de destruir todos os fragmentos, começa um novo nível com mais asteróides.
+Cada nível começa com asteróides grandes que se movimentam em várias direções. Conseguindo disparar contra os mesmos, estes separam-se em fragmentos menores, até ser possível fazer desaparecer completamente os fragmentos mais pequenos. Acabando de destruir todos os fragmentos, começa um novo nível com mais asteróides.
 
 #### UI
 
