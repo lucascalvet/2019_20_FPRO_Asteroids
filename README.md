@@ -22,9 +22,9 @@ Cada nível começa com asteróides grandes que se movimentam em várias direç�
 
 #### Tarefas
 
-1. Criar os assets do jogo e preparar a sua interface
-2. Possibilitar o movimento aleatório dos asteróides e o controlo da nave.
-3. Identificar colisões e marcar a pontuação e vidas do jogador
-4. Ajustes finais.
+1. (26/11) Criar os assets do jogo e possibilitar o controlo da nave.
+2. (03/12) Possibilitar o movimento aleatório dos asteróides e criar os 'tiros'.
+3. (10/12) Identificar e mostrar colisões e marcar a pontuação e vidas do jogador.
+4. (07/01) Ajustes finais.
 
 ### 19/11/2019
