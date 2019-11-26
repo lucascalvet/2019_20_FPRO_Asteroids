@@ -6,7 +6,7 @@ WIDTH = 800
 HEIGHT = 600
 display = pygame.display.set_mode((WIDTH, HEIGHT))
 asteroid = pygame.image.load('asteroid.png')
-blueship = pygame.image.load('ship.png')
+blueship = pygame.image.load('ship(copy).png')
 big_ast = pygame.transform.scale(asteroid, (105, 100))
 med_ast = pygame.transform.scale(asteroid, (53, 50))
 small_ast = pygame.transform.scale(asteroid, (26, 25))
@@ -14,10 +14,12 @@ ship = pygame.transform.scale(blueship, (30, 20))
 
 x = 400
 y = 300
-vel = 0
+vel_x = 0
+vel_y = 0
 angle = 90
+vel_ang = 90
 VEL_ANG = 0.5
-ACCEL = 0.0002
+ACCEL = 0.0003
 FRICTION = 0.0025
 
 running = True
@@ -34,20 +36,26 @@ while running:
     if keys[pygame.K_RIGHT]:
         angle -= VEL_ANG * dt
     if keys[pygame.K_UP]:
-        vel += ACCEL * dt
-    if keys[pygame.K_DOWN]:
-        vel -= ACCEL * dt
+        vel_x += ACCEL * math.cos(math.pi*angle/180) * dt
+        vel_y += ACCEL * math.sin(math.pi*angle/180) * dt
+#    if keys[pygame.K_DOWN]:
+#        
+#    vel = math.sqrt()
+    if vel_x > 0:
+        vel_x = max(0, vel_x - FRICTION)
+    if vel_x < 0:
+        vel_x = min(0, vel_x + FRICTION)
+    if vel_y > 0:
+        vel_y = max(0, vel_y - FRICTION)
+    if vel_y < 0:
+        vel_y = min(0, vel_y + FRICTION)
+    vel_x = min(vel_x, 0.007*dt)
+    vel_x = max(vel_x, -0.007*dt)
+    vel_y = min(vel_y, 0.007*dt)
+    vel_y = max(vel_y, -0.007*dt)
 
-    if vel > 0:
-        vel = max(0, vel - FRICTION)
-    if vel < 0:
-        vel = min(0, vel + FRICTION)
-    print(vel/dt)
-    vel = min(vel, 0.007*dt)
-    vel = max(vel, -0.007*dt)
-
-    x = (x + vel * math.cos(math.pi*angle/180) * dt) % WIDTH
-    y = (y - vel * math.sin(math.pi*angle/180) * dt) % HEIGHT
+    x = (x + vel_x * dt) % WIDTH
+    y = (y - vel_y * dt) % HEIGHT
 
     rot_ship = pygame.transform.rotate(ship, angle)
     dw = rot_ship.get_width() - ship.get_width()
