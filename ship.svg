@@ -11,11 +11,14 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
    id="svg2"
-   width="1600"
-   height="950"
-   viewBox="0 0 1600 950"
+   width="800"
+   height="800"
+   viewBox="0 0 800 800"
    sodipodi:docname="ship.svg"
-   inkscape:version="0.92.4 (f8dce91, 2019-08-02)">
+   inkscape:version="0.92.4 (f8dce91, 2019-08-02)"
+   inkscape:export-filename="/home/lucas/fpro/fpro-asteroids/ship.png"
+   inkscape:export-xdpi="72"
+   inkscape:export-ydpi="72">
   <metadata
      id="metadata8">
     <rdf:RDF>
@@ -24,11 +27,20 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs6" />
+     id="defs6">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 475 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="1600 : 475 : 1"
+       inkscape:persp3d-origin="800 : 316.66667 : 1"
+       id="perspective7" />
+  </defs>
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -42,16 +54,17 @@
      inkscape:window-height="713"
      id="namedview4"
      showgrid="false"
-     inkscape:zoom="0.30935922"
-     inkscape:cx="399.81153"
-     inkscape:cy="320.98527"
+     inkscape:zoom="0.4375"
+     inkscape:cx="823.03503"
+     inkscape:cy="422.30878"
      inkscape:window-x="59"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg2" />
+     inkscape:current-layer="svg2"
+     inkscape:snap-page="true" />
   <path
-     style="fill:#9080ff;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
-     d="m 779.02963,437.65065 196.37365,91.31779 -196.37365,89.7015 46.87105,-88.8934 z"
+     style="fill:#9080ff;fill-opacity:1;stroke:#000000;stroke-width:4.19413996px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 4,0 794.74123,398.92416 4,790.78753 192.73661,402.45433 Z"
      id="path12"
      inkscape:connector-curvature="0"
      inkscape:export-xdpi="72"
