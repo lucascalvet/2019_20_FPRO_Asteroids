@@ -2,6 +2,16 @@ import pygame
 import math
 import random
 
+def ast_x():
+    return random.randrange(WIDTH + 1)
+
+def ast_y():
+    return random.randrange(HEIGHT + 1)
+
+def ast_ang():
+    return random.randrange(629)
+
+
 pygame.init()
 WIDTH = 800
 HEIGHT = 600
@@ -25,15 +35,12 @@ ship_y = 300
 vel_x = 0
 vel_y = 0
 angle = 90
-bullet_x = ship_x - bullet.get_width()/2 + 13 * math.cos(math.pi*angle/180)
-bullet_y = ship_y - bullet.get_height()/2 - 13 * math.sin(math.pi*angle/180)
+bullet_x = ship_x
+bullet_y = ship_y
 bullet_vel = 0
 bullet_ang = 0
-ast1 = big_ast
-ast1_x = random.randrange(WIDTH + 1)
-ast1_y = random.randrange(HEIGHT + 1)
-ast1_ang = random.randrange(361)
-
+bullets = []
+asteroids = [{'x': ast_x(), 'y': ast_y(), 'ang': ast_ang(), 'type': big_ast} for i in range(4)]
 
 running = True
 clock = pygame.time.Clock()
@@ -65,19 +72,17 @@ while running:
 
     ship_x = (ship_x + vel_x) % (WIDTH + ship.get_width())
     ship_y = (ship_y - vel_y) % (HEIGHT + ship.get_height())
-    
-    
+
+
     bullet_x = (bullet_x + bullet_vel*dt * math.cos(math.pi*bullet_ang/180)) % WIDTH
     bullet_y = (bullet_y - bullet_vel*dt * math.sin(math.pi*bullet_ang/180)) % HEIGHT  
 
-
-    ast1_x = (ast1_x + AST_VEL * math.cos(math.pi*ast1_ang/180) * dt) % (WIDTH + ast1.get_width())
-    ast1_y = (ast1_y + AST_VEL * math.sin(math.pi*ast1_ang/180) * dt) % (HEIGHT + ast1.get_height())
-
+    for ast in asteroids:
+        ast['x'] = (ast['x'] + AST_VEL*dt * math.cos(ast['ang']/100)) % (WIDTH + ast['type'].get_width())
+        ast['y'] = (ast['y'] - AST_VEL*dt * math.sin(ast['ang']/100)) % (HEIGHT + ast['type'].get_height())
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.display.quit()
             running = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
@@ -87,8 +92,6 @@ while running:
                 print(vel_x)
                 print(vel_y)
                 bullet_ang = angle
-    if running == False:
-        break
 
     rot_ship = pygame.transform.rotate(ship, angle)
     ship_width = ship.get_width()
@@ -98,8 +101,12 @@ while running:
     display.fill((0, 0, 0))
     display.blit(bullet, (bullet_x - ship_width/2 - bullet.get_width()/2 + ship_height*math.cos(math.pi*bullet_ang/180), bullet_y - ship_height/2 - bullet.get_height()/2 - ship_height*math.sin(math.pi*bullet_ang/180)))
     display.blit(rot_ship, (ship_x-dw/2 - ship_width, ship_y-dh/2 - ship_height))
-    display.blit(ast1, (ast1_x - ast1.get_width(), ast1_y - ast1.get_height()))
+    pygame.draw.circle(display, (0, 255, 0), (int(ship_x-ship_width/2), int(ship_y-ship_height/2)), 2)
+    for ast in asteroids:
+        display.blit(ast['type'], (ast['x'] - ast['type'].get_width(), ast['y'] - ast['type'].get_height()))
     display.blit(big_ast, (0, 0))
     display.blit(med_ast, (105, 0))
     display.blit(small_ast, (158, 0))
     pygame.display.flip()
+
+pygame.quit()
