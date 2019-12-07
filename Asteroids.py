@@ -30,18 +30,15 @@ ACCEL = 0.01
 MAX_VEL = 0.5
 FRICTION = 0.05
 AST_VEL = 0.1
+BULLET_VEL = 0.4
 ship_x = 400
 ship_y = 300
 vel_x = 0
 vel_y = 0
 angle = 90
-bullet_x = ship_x
-bullet_y = ship_y
-bullet_vel = 0
-bullet_ang = 0
 bullets = []
+bullet_max = 500
 asteroids = [{'x': ast_x(), 'y': ast_y(), 'ang': ast_ang(), 'type': big_ast} for i in range(4)]
-
 running = True
 clock = pygame.time.Clock()
 while running:
@@ -72,10 +69,15 @@ while running:
 
     ship_x = (ship_x + vel_x) % (WIDTH + ship.get_width())
     ship_y = (ship_y - vel_y) % (HEIGHT + ship.get_height())
-
-
-    bullet_x = (bullet_x + bullet_vel*dt * math.cos(math.pi*bullet_ang/180)) % WIDTH
-    bullet_y = (bullet_y - bullet_vel*dt * math.sin(math.pi*bullet_ang/180)) % HEIGHT  
+    index = -1
+    for bull in bullets:
+        index += 1
+        if bull['d'] > bullet_max:
+            del bullets[index]
+            break
+        bull['x'] = (bull['x'] + BULLET_VEL*dt * math.cos(math.pi*bull['ang']/180)) % WIDTH
+        bull['y'] = (bull['y'] - BULLET_VEL*dt * math.sin(math.pi*bull['ang']/180)) % HEIGHT
+        bull['d'] += BULLET_VEL*dt
 
     for ast in asteroids:
         ast['x'] = (ast['x'] + AST_VEL*dt * math.cos(ast['ang']/100)) % (WIDTH + ast['type'].get_width())
@@ -86,12 +88,8 @@ while running:
             running = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                bullet_x = ship_x
-                bullet_y = ship_y
-                bullet_vel = 0.2 + ((vel_x/dt)**2 + (vel_y/dt)**2)**(1/2)
-                print(vel_x)
-                print(vel_y)
-                bullet_ang = angle
+                if len(bullets) < 4:
+                    bullets.append({'x': ship_x, 'y': ship_y, 'ang': angle, 'd': 0})
 
     rot_ship = pygame.transform.rotate(ship, angle)
     ship_width = ship.get_width()
@@ -99,9 +97,12 @@ while running:
     dw = rot_ship.get_width() - ship_width
     dh = rot_ship.get_height() - ship_height
     display.fill((0, 0, 0))
-    display.blit(bullet, (bullet_x - ship_width/2 - bullet.get_width()/2 + ship_height*math.cos(math.pi*bullet_ang/180), bullet_y - ship_height/2 - bullet.get_height()/2 - ship_height*math.sin(math.pi*bullet_ang/180)))
+    for bull in bullets:
+        display.blit(bullet,
+                     (bull['x'] - ship_width/2 - bullet.get_width()/2 + ship_height*math.cos(math.pi*bull['ang']/180),
+                     bull['y'] - ship_height/2 - bullet.get_height()/2 - ship_height*math.sin(math.pi*bull['ang']/180)))
     display.blit(rot_ship, (ship_x-dw/2 - ship_width, ship_y-dh/2 - ship_height))
-    pygame.draw.circle(display, (0, 255, 0), (int(ship_x-ship_width/2), int(ship_y-ship_height/2)), 2)
+#    pygame.draw.circle(display, (0, 255, 0), (int(ship_x-ship_width/2), int(ship_y-ship_height/2)), 2)
     for ast in asteroids:
         display.blit(ast['type'], (ast['x'] - ast['type'].get_width(), ast['y'] - ast['type'].get_height()))
     display.blit(big_ast, (0, 0))
