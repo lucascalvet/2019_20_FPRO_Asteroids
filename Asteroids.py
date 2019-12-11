@@ -31,6 +31,8 @@ small_ast = pygame.transform.scale(asteroid, (26, 25))
 ship = n_ship
 rot_ship = ship
 bullet = pygame.transform.scale(pygame.image.load('bullet.png'), (5, 5))
+pygame.display.set_icon(small_ast)
+
 
 VEL_ANG = 0.3
 ACCEL = 0.007
@@ -47,11 +49,12 @@ bullets = []
 bullet_max = 500
 asteroids = [{'x': rand_x(), 'y': rand_y(), 'ang': rand_ang(), 'type': big_ast} for i in range(4)]
 running = True
+ship_vis = True
 clock = pygame.time.Clock()
 
 while running:
     dt = clock.tick(30)
-#    print(clock.get_fps())
+    pygame.display.set_caption('FPS: ' + str(clock.get_fps()))
     keys = pygame.key.get_pressed()
     
     if keys[pygame.K_LEFT]:
@@ -83,13 +86,13 @@ while running:
     bull_index = -1
     ast_index = -1
     color = (0, 255, 0)
+    ship_rect = rot_ship.get_rect(center=(ship_x-SHIP_WIDTH/2, ship_y-SHIP_HEIGHT/2))
     for ast in asteroids:
         ast_index += 1
         ast['x'] = (ast['x'] + AST_VEL*dt * math.cos(ast['ang'])) % (WIDTH + ast['type'].get_width())
         ast['y'] = (ast['y'] - AST_VEL*dt * math.sin(ast['ang'])) % (HEIGHT + ast['type'].get_height())
         ast['rect'] = ast['type'].get_rect(bottomright=(ast['x'], ast['y']))
         bull_coll = ast['rect'].collidelist([bull['rect'] for bull in bullets])
-        ship_rect = rot_ship.get_rect(center=(ship_x-SHIP_WIDTH/2, ship_y-SHIP_HEIGHT/2))
         ship_coll = ast['rect'].colliderect(ship_rect)
         if bull_coll > -1:
             if ast['type'] != small_ast:
@@ -137,7 +140,8 @@ while running:
             if event.key == pygame.K_DOWN:
                 ship_vis = False
                 pygame.time.set_timer(pygame.USEREVENT, 1000)
-
+    if len(asteroids) == 0:
+        running = False
     rot_ship = pygame.transform.rotate(ship, angle)
     dw = rot_ship.get_width() - SHIP_WIDTH
     dh = rot_ship.get_height() - SHIP_HEIGHT
