@@ -20,9 +20,8 @@ def game_over():
     over_message = large_font.render('GAME OVER', True, (255, 255, 255))
     info_message = font.render('Press q to quit or r to restart', True, (255, 255, 255))
     display.blit(over_message, over_message.get_rect(center = (WIDTH/2, HEIGHT/2)))
-    display.blit(info_message, info_message.get_rect(center = (WIDTH/2, HEIGHT/2 + 30)))
+    display.blit(info_message, info_message.get_rect(center = (WIDTH/2, HEIGHT/2 + 40)))
     pygame.display.flip()
-    close = False
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -50,6 +49,20 @@ rot_ship = ship
 bullet = pygame.transform.scale(pygame.image.load('bullet.png'), (5, 5))
 pygame.display.set_icon(small_ast)
 
+'''
+class Jogador:
+    vel_x = 0
+    vel_y = 0
+    lives = 2
+
+    def f(self):
+        self.vel_x
+        return
+
+jogador1 = Jogador()
+jogador1.f()
+jogadores = [jogador1, jogador2]
+'''
 
 HYPERSPACE = 24
 NEW_LEVEL = 25
@@ -74,8 +87,9 @@ changing = False
 running = True
 ship_vis = True
 clock = pygame.time.Clock()
-font = pygame.font.SysFont('Corbel', 30, bold=False, italic=False)
-large_font = pygame.font.SysFont('Corbel', 60, bold=False, italic=False)
+font_list = 'Corbel, Garuda'
+font = pygame.font.SysFont(font_list, 30, bold=False, italic=False)
+large_font = pygame.font.SysFont(font_list, 60, bold=False, italic=False)
 
 while running:
     dt = clock.tick(30)
@@ -92,7 +106,8 @@ while running:
         ship = f_ship
     else:
         ship = n_ship
-#    if keys[pygame.K_DOWN]:
+
+
     if vel_x > 0:
         vel_x = max(0, vel_x - FRICTION)
     if vel_x < 0:
@@ -156,7 +171,8 @@ while running:
                 running = game_over()
                 lives = 3
                 level = 0
-            pygame.time.set_timer(NEW_TRY, 1000)
+                pygame.time.set_timer(NEW_LEVEL, 2000)
+            pygame.time.set_timer(NEW_TRY, 2000)
 
     for bull in bullets:
         bull_index += 1
@@ -210,12 +226,12 @@ while running:
     for bull in bullets:
         display.blit(bullet, (bull['x'], bull['y']))
 #        pygame.draw.rect(display, (0, 255, 0), bull['rect'], 1)
-    if ship_vis:
-        display.blit(rot_ship, (ship_x-dw/2 - SHIP_WIDTH, ship_y-dh/2 - SHIP_HEIGHT))
-    pygame.draw.circle(display, (0, 255, 0), (int(ship_x-SHIP_WIDTH/2), int(ship_y-SHIP_HEIGHT/2)), 2)
     for ast in asteroids:
         display.blit(ast['type'], (ast['x'] - ast['type'].get_width(), ast['y'] - ast['type'].get_height()))
-    pygame.draw.rect(display, color, ship_rect, 3)
+    if ship_vis:
+        display.blit(rot_ship, (ship_x-dw/2 - SHIP_WIDTH, ship_y-dh/2 - SHIP_HEIGHT))
+#    pygame.draw.circle(display, (0, 255, 0), (int(ship_x-SHIP_WIDTH/2), int(ship_y-SHIP_HEIGHT/2)), 2)
+#    pygame.draw.rect(display, color, ship_rect, 3)
 #        pygame.draw.rect(display, (0, 255, 0), ast['rect'], 3)
 #    display.blit(big_ast, (0, 0))
 #    display.blit(med_ast, (105, 0))
