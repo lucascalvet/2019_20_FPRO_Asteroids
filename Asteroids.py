@@ -34,8 +34,10 @@ bullet = pygame.transform.scale(pygame.image.load('bullet.png'), (5, 5))
 pygame.display.set_icon(small_ast)
 
 
-VEL_ANG = 0.3
-ACCEL = 0.007
+HYPERSPACE = 24
+NEW_LEVEL = 25
+ANG_VEL = 0.3
+ACCEL = 0.008
 MAX_VEL = 0.4
 FRICTION = 0.05
 AST_VEL = 0.1
@@ -46,21 +48,25 @@ vel_x = 0
 vel_y = 0
 angle = 90
 bullets = []
-bullet_max = 500
+bullet_max = 350
 asteroids = [{'x': rand_x(), 'y': rand_y(), 'ang': rand_ang(), 'type': big_ast} for i in range(4)]
+score = 0
+level = 1
+changing = False
 running = True
 ship_vis = True
 clock = pygame.time.Clock()
+font = pygame.font.SysFont('Corbel', 30, bold=False, italic=False)
 
 while running:
     dt = clock.tick(30)
     pygame.display.set_caption('FPS: ' + str(clock.get_fps()))
     keys = pygame.key.get_pressed()
-    
+
     if keys[pygame.K_LEFT]:
-        angle += VEL_ANG * dt
+        angle += ANG_VEL * dt
     if keys[pygame.K_RIGHT]:
-        angle -= VEL_ANG * dt
+        angle -= ANG_VEL * dt
     if keys[pygame.K_UP]:
         vel_x += ACCEL * math.cos(PI*angle/180) * dt
         vel_y += ACCEL * math.sin(PI*angle/180) * dt
@@ -80,6 +86,16 @@ while running:
     vel_x = max(vel_x, -MAX_VEL*dt)
     vel_y = min(vel_y, MAX_VEL*dt)
     vel_y = max(vel_y, -MAX_VEL*dt)
+#    if vel_x != 0:
+#        vel_ang = math.atan(vel_y/vel_x)
+#    elif vel_y > 0:
+#        vel_ang = PI/2
+#    elif vel_y < 0:
+#        vel_ang = -PI/2
+#    vel_x = min(vel_x, MAX_VEL*dt * math.cos(vel_ang))
+#    vel_x = max(vel_x, -MAX_VEL*dt * math.cos(vel_ang))
+#    vel_y = min(vel_y, MAX_VEL*dt * math.sin(vel_ang))
+#    vel_y = max(vel_y, -MAX_VEL*dt * math.sin(vel_ang))
 
     ship_x = (ship_x + vel_x) % (WIDTH + SHIP_WIDTH)
     ship_y = (ship_y - vel_y) % (HEIGHT + SHIP_HEIGHT)
@@ -98,14 +114,18 @@ while running:
             if ast['type'] != small_ast:
                 if ast['type'] == big_ast:
                     new_type = med_ast
+                    score += 20
                 else:
                     new_type = small_ast
+                    score += 50
                 asteroids.append({'x': ast['x'], 'y': ast['y'],
                                   'ang': rand_ang(amp=(ast['ang']-0.75, ast['ang']+0.75)),
                                   'type': new_type})
                 asteroids.append({'x': ast['x'], 'y': ast['y'],
                                   'ang': rand_ang(amp=(ast['ang']-0.75, ast['ang']+0.75)),
                                   'type': new_type})
+            else:
+                score += 100
             del asteroids[ast_index]
             del bullets[bull_coll]
         if ship_coll:
@@ -125,11 +145,15 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.USEREVENT:
+        if event.type == HYPERSPACE:
             ship_vis = True
             ship_x, ship_y = rand_x(), rand_y()
             vel_x, vel_y = 0, 0
-            pygame.time.set_timer(pygame.USEREVENT, 0)
+            pygame.time.set_timer(HYPERSPACE, 0)
+        if event.type == NEW_LEVEL:
+            changing = False
+            asteroids = [{'x': rand_x(), 'y': rand_y(), 'ang': rand_ang(), 'type': big_ast} for i in range(level+3)]
+            pygame.time.set_timer(NEW_LEVEL, 0)
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 if len(bullets) < 4:
@@ -139,9 +163,12 @@ while running:
                                     'rect': bullet.get_rect(topleft=(x, y))})
             if event.key == pygame.K_DOWN:
                 ship_vis = False
-                pygame.time.set_timer(pygame.USEREVENT, 1000)
-    if len(asteroids) == 0:
-        running = False
+                pygame.time.set_timer(HYPERSPACE, 1000)
+    if len(asteroids) == 0 and not changing:
+        changing = True
+        level += 1
+        pygame.time.set_timer(NEW_LEVEL, 2000)
+        
     rot_ship = pygame.transform.rotate(ship, angle)
     dw = rot_ship.get_width() - SHIP_WIDTH
     dh = rot_ship.get_height() - SHIP_HEIGHT
@@ -159,5 +186,7 @@ while running:
 #    display.blit(big_ast, (0, 0))
 #    display.blit(med_ast, (105, 0))
 #    display.blit(small_ast, (158, 0))
+    display.blit(font.render('Level: ' + str(level), True, (255, 255, 255)), (10, 10))
+    display.blit(font.render('Score: ' + str(score), True, (255, 255, 255)), (10, 40))
     pygame.display.flip()
 pygame.quit()
