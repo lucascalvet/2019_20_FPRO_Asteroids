@@ -26,10 +26,11 @@ def set_level(level):
 
 
 def start_screen():
-    start_message = large_font.render('ASTEROIDS', True, (255, 255, 255))
-    info_message = font.render('Press s to start.', True, (255, 255, 255))
+    start_message = pygame.font.SysFont(font_list, 100, bold=True, italic=False).render('ASTEROIDS', True, (255, 255, 255))
+    info_message = font.render('Press s to start.', True, (255, 255, 255))  
     display.blit(start_message, start_message.get_rect(center=(WIDTH/2, HEIGHT/2 - 40)))
     display.blit(info_message, info_message.get_rect(center=(WIDTH/2, HEIGHT/2 + 40)))
+    display.blit(instructions, instructions.get_rect(midbottom=(WIDTH/2, HEIGHT - 20)))
     pygame.display.flip()
     while True:
         for event in pygame.event.get():
@@ -38,6 +39,7 @@ def start_screen():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_s:
                     return True
+
 
 def game_over():
     over_message = large_font.render('GAME OVER', True, (255, 255, 255))
@@ -55,12 +57,36 @@ def game_over():
                 if event.key == pygame.K_r:
                     return True
 
+
+def break_ast(asteroids, ast, ast_index, score):
+    if ast['type'] != small_ast:
+        if ast['type'] == big_ast:
+            new_type = med_ast
+            score += 20
+        else:
+            new_type = small_ast
+            score += 50
+        asteroids.append({'x': ast['x'], 'y': ast['y'],
+                          'ang': rand_ang(amp=(ast['ang']-0.75, ast['ang']+0.75)),
+                          'type': new_type,
+                          'rect': new_type.get_rect(bottomright=(ast['x'], ast['y']))})
+        asteroids.append({'x': ast['x'], 'y': ast['y'],
+                          'ang': rand_ang(amp=(ast['ang']-0.75, ast['ang']+0.75)),
+                          'type': new_type,
+                          'rect': new_type.get_rect(bottomright=(ast['x'], ast['y']))})
+    else:
+        score += 100
+    del asteroids[ast_index]
+    return asteroids, score
+
+
 pygame.init()
 WIDTH = 800
 HEIGHT = 600
 SHIP_WIDTH = 30
 SHIP_HEIGHT = 20
 display = pygame.display.set_mode((WIDTH, HEIGHT))
+instructions = pygame.image.load('instructions.png')
 asteroid = pygame.image.load('asteroid.png')
 n_ship = pygame.transform.scale(pygame.image.load('ship.png'), (SHIP_WIDTH, SHIP_HEIGHT))
 f_ship = pygame.transform.scale(pygame.image.load('ship_firing.png'), (SHIP_WIDTH, SHIP_HEIGHT))
@@ -69,9 +95,8 @@ med_ast = pygame.transform.scale(asteroid, (53, 50))
 small_ast = pygame.transform.scale(asteroid, (26, 25))
 ship = n_ship
 rot_ship = ship
-bullet = pygame.transform.scale(pygame.image.load('bullet.png'), (5, 5))
+bullet = pygame.transform.scale(pygame.image.load('bullet.png'), (6, 6))
 pygame.display.set_icon(small_ast)
-
 '''
 class Jogador:
     vel_x = 0
@@ -86,11 +111,10 @@ jogador1 = Jogador()
 jogador1.f()
 jogadores = [jogador1, jogador2]
 '''
-
 HYPERSPACE = 24
 NEW_LEVEL = 25
 NEW_TRY = 26
-GAME_OVER = 27
+PROTECTION = 27
 ANG_VEL = 0.3
 ACCEL = 0.008
 MAX_VEL = 0.4
@@ -105,14 +129,18 @@ bullet_max = 350
 level = 1
 score = 0
 lives = 3
+t_blink = 0
 asteroids = set_level(level)
-changing = False
+changing = True
 ship_vis = True
+protected = True
+stars = [(rand_x(), rand_y()) for _ in range(100)]
 clock = pygame.time.Clock()
 font_list = 'Corbel, Courier 10 Pitc, FreeMono, Garuda'
 font = pygame.font.SysFont(font_list, 30, bold=True, italic=False)
 large_font = pygame.font.SysFont(font_list, 60, bold=True, italic=False)
 running = start_screen()
+pygame.time.set_timer(PROTECTION, 300)
 
 while running:
     dt = clock.tick(30)
@@ -153,7 +181,6 @@ while running:
 #    vel_x = max(vel_x, -MAX_VEL*dt * math.cos(vel_ang))
 #    vel_y = min(vel_y, MAX_VEL*dt * math.sin(vel_ang))
 #    vel_y = max(vel_y, -MAX_VEL*dt * math.sin(vel_ang))
-
     ship_x = (ship_x + vel_x) % (WIDTH + SHIP_WIDTH)
     ship_y = (ship_y - vel_y) % (HEIGHT + SHIP_HEIGHT)
     bull_index = -1
@@ -175,17 +202,28 @@ while running:
         print(event)
         if event.type == pygame.QUIT:
             running = False
+        if event.type == PROTECTION:
+            ship_vis = not ship_vis
+            t_blink += 1
+            if t_blink == 8:
+                pygame.time.set_timer(PROTECTION, 0)
+                t_blink = 0
+                changing = False
         if event.type == HYPERSPACE:
             ship_vis = True
             ship_x, ship_y = rand_x(), rand_y()
             vel_x, vel_y = 0, 0
             pygame.time.set_timer(HYPERSPACE, 0)
         if event.type == NEW_LEVEL:
-            changing = False
+            ship_vis = True
+            pygame.time.set_timer(PROTECTION, 300)
             asteroids = set_level(level)
             pygame.time.set_timer(NEW_LEVEL, 0)
         if event.type == NEW_TRY:
-            changing = False
+            if len(asteroids) == 0:
+                level += 1
+                asteroids = set_level(level)
+            pygame.time.set_timer(PROTECTION, 300)
             ship_vis = True
             ship_x, ship_y = WIDTH/2, HEIGHT/2
             vel_x, vel_y = 0, 0
@@ -211,34 +249,20 @@ while running:
         bull_coll = ast['rect'].collidelist([bull['rect'] for bull in bullets])
         ship_coll = ast['rect'].colliderect(ship_rect)
         if bull_coll > -1:
-            if ast['type'] != small_ast:
-                if ast['type'] == big_ast:
-                    new_type = med_ast
-                    score += 20
-                else:
-                    new_type = small_ast
-                    score += 50
-                asteroids.append({'x': ast['x'], 'y': ast['y'],
-                                  'ang': rand_ang(amp=(ast['ang']-0.75, ast['ang']+0.75)),
-                                  'type': new_type,
-                                  'rect': new_type.get_rect(bottomright=(ast['x'], ast['y']))})
-                asteroids.append({'x': ast['x'], 'y': ast['y'],
-                                  'ang': rand_ang(amp=(ast['ang']-0.75, ast['ang']+0.75)),
-                                  'type': new_type,
-                                  'rect': new_type.get_rect(bottomright=(ast['x'], ast['y']))})
-            else:
-                score += 100
-            del asteroids[ast_index]
+            asteroids, score = break_ast(asteroids, ast, ast_index, score)
             del bullets[bull_coll]
+            break
         if ship_coll and not changing and ship_vis:
             color = (255, 0, 0)
             lives -= 1
+            asteroids, score = break_ast(asteroids, ast, ast_index, score)
             if lives > 0:
                 changing = True
                 ship_vis = False
                 pygame.time.set_timer(NEW_TRY, 2000)
+            break
 
-    if len(asteroids) == 0 and not changing:
+    if len(asteroids) == 0 and not changing and lives > 0:
         changing = True
         level += 1
         pygame.time.set_timer(NEW_LEVEL, 2000)
@@ -247,6 +271,8 @@ while running:
     dw = rot_ship.get_width() - SHIP_WIDTH
     dh = rot_ship.get_height() - SHIP_HEIGHT
     display.fill((0, 0, 0))
+    for star in stars:
+        pygame.draw.circle(display, (255, 255, 175), (star[0], star[1]), 2)
     for bull in bullets:
         display.blit(bullet, (bull['x'], bull['y']))
 #        pygame.draw.rect(display, (0, 255, 0), bull['rect'], 1)
@@ -257,21 +283,17 @@ while running:
         display.blit(rot_ship, (ship_x-dw/2 - SHIP_WIDTH, ship_y-dh/2 - SHIP_HEIGHT))
 #    pygame.draw.circle(display, (0, 255, 0), (int(ship_x-SHIP_WIDTH/2), int(ship_y-SHIP_HEIGHT/2)), 2)
 #    pygame.draw.rect(display, color, ship_rect, 3)
-
-#    display.blit(big_ast, (0, 0))
-#    display.blit(med_ast, (105, 0))
-#    display.blit(small_ast, (158, 0))
     display.blit(font.render('Level: ' + str(level), True, (255, 255, 255)), (10, 10))
     display.blit(font.render('Score: ' + str(score), True, (255, 255, 255)), (10, 40))
     display.blit(font.render('Lives: ' + str(lives), True, (255, 255, 255)), (10, 70))
+    pygame.display.flip()
     if lives == 0:
         running = game_over()
         score = 0
         lives = 3
         level = 1
-        ship_x, ship_y = WIDTH/2, HEIGHT/2
-        vel_x, vel_y = 0, 0
-        angle = 90
+        changing = True
+        ship_vis = True
         asteroids = set_level(level)
-    pygame.display.flip()
+        pygame.event.post(pygame.event.Event(NEW_TRY))
 pygame.quit()
