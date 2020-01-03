@@ -96,21 +96,7 @@ small_ast = pygame.transform.scale(asteroid, (26, 25))
 ship = n_ship
 rot_ship = ship
 bullet = pygame.transform.scale(pygame.image.load('bullet.png'), (6, 6))
-pygame.display.set_icon(small_ast)
-'''
-class Jogador:
-    vel_x = 0
-    vel_y = 0
-    lives = 2
 
-    def f(self):
-        self.vel_x
-        return
-
-jogador1 = Jogador()
-jogador1.f()
-jogadores = [jogador1, jogador2]
-'''
 HYPERSPACE = 24
 NEW_LEVEL = 25
 NEW_TRY = 26
@@ -136,6 +122,7 @@ ship_vis = True
 protected = True
 stars = [(rand_x(), rand_y()) for _ in range(100)]
 clock = pygame.time.Clock()
+pygame.display.set_icon(small_ast)
 font_list = 'Corbel, Courier 10 Pitc, FreeMono, Garuda'
 font = pygame.font.SysFont(font_list, 30, bold=True, italic=False)
 large_font = pygame.font.SysFont(font_list, 60, bold=True, italic=False)
@@ -158,7 +145,6 @@ while running:
     else:
         ship = n_ship
 
-
     if vel_x > 0:
         vel_x = max(0, vel_x - FRICTION)
     if vel_x < 0:
@@ -171,16 +157,6 @@ while running:
     vel_x = max(vel_x, -MAX_VEL*dt)
     vel_y = min(vel_y, MAX_VEL*dt)
     vel_y = max(vel_y, -MAX_VEL*dt)
-#    if vel_x != 0:
-#        vel_ang = math.atan(vel_y/vel_x)
-#    elif vel_y > 0:
-#        vel_ang = PI/2
-#    elif vel_y < 0:
-#        vel_ang = -PI/2
-#    vel_x = min(vel_x, MAX_VEL*dt * math.cos(vel_ang))
-#    vel_x = max(vel_x, -MAX_VEL*dt * math.cos(vel_ang))
-#    vel_y = min(vel_y, MAX_VEL*dt * math.sin(vel_ang))
-#    vel_y = max(vel_y, -MAX_VEL*dt * math.sin(vel_ang))
     ship_x = (ship_x + vel_x) % (WIDTH + SHIP_WIDTH)
     ship_y = (ship_y - vel_y) % (HEIGHT + SHIP_HEIGHT)
     bull_index = -1
