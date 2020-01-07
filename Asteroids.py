@@ -305,7 +305,6 @@ while running:
         display.blit(bullet, (bull['x'], bull['y']))
     for ast in asteroids:
         display.blit(ast['type'], (ast['x'] - ast['type'].get_width(), ast['y'] - ast['type'].get_height()))
-        pygame.draw.rect(display, (0, 255, 0), ast['rect'], 3)
     if ship_vis:
         display.blit(rot_ship, (ship_x-dw/2 - SHIP_WIDTH, ship_y-dh/2 - SHIP_HEIGHT))
     display.blit(font.render('Level: ' + str(level), True, (255, 255, 255)), (10, 10))
