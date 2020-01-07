@@ -70,6 +70,7 @@ def start_screen():  # displays a start screen and returns the 'running' value
                 return False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_s:
+                    start_sound.stop()
                     return True
 
 
@@ -130,6 +131,7 @@ exp1_sound = pygame.mixer.Sound('explosion1.ogg')
 exp2_sound = pygame.mixer.Sound('explosion2.ogg')
 over_sound = pygame.mixer.Sound('over.ogg')
 start_sound = pygame.mixer.Sound('start.ogg')
+thruster_sound = pygame.mixer.Sound('thruster.ogg')
 start_lvl_sound = pygame.mixer.Sound('start_level.ogg')
 font_list = 'Corbel, Courier 10 Pitc, FreeMono, Garuda'
 font = pygame.font.SysFont(font_list, 30, bold=True, italic=False)
@@ -258,10 +260,16 @@ while running:
                 if ship_vis and not changing:
                     ship_vis = False
                     pygame.time.set_timer(HYPERSPACE, 1000)
+            if event.key == pygame.K_UP:
+                thruster_sound.stop()
+                thruster_sound.play()
             if event.key == pygame.K_q:  # quit the game
                 running = False
             if event.key == pygame.K_p:  # pause the game
                 running = pause()
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_UP:
+                thruster_sound.fadeout(500)
     # handle collisions with asteroids (from both bullets and the ship)
     color = (0, 255, 0)
     ship_rect = rot_ship.get_rect(center=(ship_x-SHIP_WIDTH/2, ship_y-SHIP_HEIGHT/2))
@@ -278,6 +286,7 @@ while running:
             exp1_sound.play()
             ast_del.append(ast_index)
             del bullets[bull_coll]
+            break
         if ship_coll and not changing and ship_vis:
             exp2_sound.play()
             lives -= 1
@@ -317,8 +326,10 @@ while running:
         score = 0
         lives = 3
         level = 1
+        ship_x, ship_y = WIDTH/2, HEIGHT/2
+        vel_x, vel_y = 0, 0
+        angle = 90
         changing = True
         ship_vis = True
-        asteroids = set_level(level)
-        pygame.event.post(pygame.event.Event(NEW_TRY))
+        pygame.event.post(pygame.event.Event(NEW_LEVEL))
 pygame.quit()
