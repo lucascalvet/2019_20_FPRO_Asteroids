@@ -25,39 +25,6 @@ def set_level(level):
     return asteroids
 
 
-def start_screen():
-    start_message = pygame.font.SysFont(font_list, 100, bold=True, italic=False).render('ASTEROIDS', True, (255, 255, 255))
-    info_message = font.render('Press s to start.', True, (255, 255, 255))  
-    display.blit(start_message, start_message.get_rect(center=(WIDTH/2, HEIGHT/2 - 40)))
-    display.blit(info_message, info_message.get_rect(center=(WIDTH/2, HEIGHT/2 + 40)))
-    display.blit(instructions, instructions.get_rect(midbottom=(WIDTH/2, HEIGHT - 20)))
-    pygame.display.flip()
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_s:
-                    return True
-
-
-def game_over():
-    over_message = large_font.render('GAME OVER', True, (255, 255, 255))
-    info_message = font.render('Press q to quit or r to restart.', True, (255, 255, 255))
-    display.blit(over_message, over_message.get_rect(center=(WIDTH/2, HEIGHT/2 - 40)))
-    display.blit(info_message, info_message.get_rect(center=(WIDTH/2, HEIGHT/2 + 40)))
-    pygame.display.flip()
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q:
-                    return False
-                if event.key == pygame.K_r:
-                    return True
-
-
 def break_ast(asteroids, ast, ast_index, score):
     if ast['type'] != small_ast:
         if ast['type'] == big_ast:
@@ -78,6 +45,56 @@ def break_ast(asteroids, ast, ast_index, score):
         score += 100
     del asteroids[ast_index]
     return asteroids, score
+
+
+def start_screen():
+    start_message = pygame.font.SysFont(font_list, 100, bold=True, italic=False).render('ASTEROIDS', True, (255, 255, 255))
+    info_message = font.render('Press s to start.', True, (255, 255, 255))  
+    display.blit(start_message, start_message.get_rect(center=(WIDTH/2, HEIGHT/2 - 40)))
+    display.blit(info_message, info_message.get_rect(center=(WIDTH/2, HEIGHT/2 + 40)))
+    display.blit(instructions, instructions.get_rect(midbottom=(WIDTH/2, HEIGHT - 20)))
+    pygame.display.flip()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_s:
+                    return True
+
+
+def pause():
+    pause_message = large_font.render('PAUSE', True, (255, 255, 255))
+    info_message = font.render('Press q to quit or p to continue.', True, (255, 255, 255))
+    display.blit(pause_message, pause_message.get_rect(center=(WIDTH/2, HEIGHT/2 - 40)))
+    display.blit(info_message, info_message.get_rect(center=(WIDTH/2, HEIGHT/2 + 40)))
+    pygame.display.flip()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    return False
+                if event.key == pygame.K_p:
+                    return True
+
+
+def game_over():
+    over_message = large_font.render('GAME OVER', True, (255, 255, 255))
+    info_message = font.render('Press q to quit or r to restart.', True, (255, 255, 255))
+    display.blit(over_message, over_message.get_rect(center=(WIDTH/2, HEIGHT/2 - 40)))
+    display.blit(info_message, info_message.get_rect(center=(WIDTH/2, HEIGHT/2 + 40)))
+    pygame.display.flip()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    return False
+                if event.key == pygame.K_r:
+                    return True
 
 
 pygame.init()
@@ -105,7 +122,7 @@ ANG_VEL = 0.3
 ACCEL = 0.008
 MAX_VEL = 0.4
 FRICTION = 0.05
-AST_VEL = 0.1
+AST_VEL = 0.01
 BULLET_VEL = 0.3
 ship_x, ship_y = WIDTH/2, HEIGHT/2
 vel_x, vel_y = 0, 0
@@ -216,6 +233,10 @@ while running:
                 if ship_vis:
                     ship_vis = False
                     pygame.time.set_timer(HYPERSPACE, 1000)
+            if event.key == pygame.K_q:
+                running = False
+            if event.key == pygame.K_p:
+                running = pause()
 
     for ast in asteroids:
         ast_index += 1
@@ -254,11 +275,12 @@ while running:
 #        pygame.draw.rect(display, (0, 255, 0), bull['rect'], 1)
     for ast in asteroids:
         display.blit(ast['type'], (ast['x'] - ast['type'].get_width(), ast['y'] - ast['type'].get_height()))
-#        pygame.draw.rect(display, (0, 255, 0), ast['rect'], 3)
+        pygame.draw.rect(display, (0, 255, 0), ast['rect'], 3)
+        pygame.draw.circle(display, (255, 0, 0), (int(ship_x-SHIP_WIDTH/2), int(ship_y-SHIP_HEIGHT/2)), 2)
     if ship_vis:
         display.blit(rot_ship, (ship_x-dw/2 - SHIP_WIDTH, ship_y-dh/2 - SHIP_HEIGHT))
 #    pygame.draw.circle(display, (0, 255, 0), (int(ship_x-SHIP_WIDTH/2), int(ship_y-SHIP_HEIGHT/2)), 2)
-#    pygame.draw.rect(display, color, ship_rect, 3)
+    pygame.draw.rect(display, color, ship_rect, 3)
     display.blit(font.render('Level: ' + str(level), True, (255, 255, 255)), (10, 10))
     display.blit(font.render('Score: ' + str(score), True, (255, 255, 255)), (10, 40))
     display.blit(font.render('Lives: ' + str(lives), True, (255, 255, 255)), (10, 70))
