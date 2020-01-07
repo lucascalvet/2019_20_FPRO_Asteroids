@@ -144,7 +144,7 @@ ANG_VEL = 0.3
 ACCEL = 0.008
 MAX_VEL = 0.4
 FRICTION = 0.05
-AST_VEL = 0
+AST_VEL = 0.1
 BULLET_VEL = 0.3
 # set inicial values
 ship_x, ship_y = WIDTH/2, HEIGHT/2
