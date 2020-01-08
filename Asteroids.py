@@ -163,63 +163,24 @@ t_blink = 0
 changing = True
 ship_vis = True
 protected = True
+paused = False
 stars = [(rand_x(), rand_y()) for _ in range(100)]
-#
-clock = pygame.time.Clock()
+# window configuration
 display = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_icon(small_ast)
 pygame.display.set_caption('Asteroids')
+
 running = start_screen()  # show the start screen
-pygame.event.post(pygame.event.Event(NEW_LEVEL))
+clock = pygame.time.Clock()  # initialize the clock
+pygame.event.post(pygame.event.Event(NEW_LEVEL))  # start the level
 
 while running:
-    dt = clock.tick(30)
-#    pygame.display.set_caption('FPS: ' + str(clock.get_fps()))
-    keys = pygame.key.get_pressed()
-    # monitor the left, right and up keys
-    if keys[pygame.K_LEFT]:
-        angle += ANG_VEL * dt
-    if keys[pygame.K_RIGHT]:
-        angle -= ANG_VEL * dt
-    if keys[pygame.K_UP]:
-        vel_x += ACCEL * math.cos(PI*angle/180) * dt
-        vel_y += ACCEL * math.sin(PI*angle/180) * dt
-        ship = f_ship
-    else:
-        ship = n_ship
-    # apply friction to the ship
-    if vel_x > 0:
-        vel_x = max(0, vel_x - FRICTION)
-    if vel_x < 0:
-        vel_x = min(0, vel_x + FRICTION)
-    if vel_y > 0:
-        vel_y = max(0, vel_y - FRICTION)
-    if vel_y < 0:
-        vel_y = min(0, vel_y + FRICTION)
-    # set a maximum velocity to the ship
-    vel_x = min(vel_x, MAX_VEL*dt)
-    vel_x = max(vel_x, -MAX_VEL*dt)
-    vel_y = min(vel_y, MAX_VEL*dt)
-    vel_y = max(vel_y, -MAX_VEL*dt)
-    # update ship position
-    ship_x = (ship_x + vel_x) % (WIDTH + SHIP_WIDTH)
-    ship_y = (ship_y - vel_y) % (HEIGHT + SHIP_HEIGHT)
-    # update bullets position and delete the ones that have reached the maximum distance
-    bull_index = -1
-    bull_del = []  # list of bullets indexes to be deleted
-    for bull in bullets:
-        bull_index += 1
-        if bull['d'] > bullet_max:
-            bull_del.append(bull_index)
-        bull['x'] = (bull['x'] + BULLET_VEL*dt * math.cos(PI*bull['ang']/180)) % WIDTH
-        bull['y'] = (bull['y'] - BULLET_VEL*dt * math.sin(PI*bull['ang']/180)) % HEIGHT
-        bull['d'] += BULLET_VEL*dt
-        bull['rect'] = bullet.get_rect(topleft=(bull['x'], bull['y']))
-    for bull in bull_del[::-1]:
-        del bullets[bull]
+    dt = clock.tick(30)  # factor for adjusting the framerate
+    if paused:
+        dt = 30  # reset dt if the game was paused in the previous loop
+        paused = False
     # handle events
     for event in pygame.event.get():
-#        print(event)
         if event.type == pygame.QUIT:
             running = False
         if event.type == PROTECTION:
@@ -270,11 +231,54 @@ while running:
                 running = False
             if event.key == pygame.K_p:  # pause the game
                 running = pause()
+                paused = True
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_UP:
-                thruster_sound.fadeout(500)
+                thruster_sound.fadeout(500)                                           
+#    pygame.display.set_caption('FPS: ' + str(clock.get_fps()))
+    # monitor the left, right and up keys
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        angle += ANG_VEL * dt
+    if keys[pygame.K_RIGHT]:
+        angle -= ANG_VEL * dt
+    if keys[pygame.K_UP]:
+        vel_x += ACCEL * math.cos(PI*angle/180) * dt
+        vel_y += ACCEL * math.sin(PI*angle/180) * dt
+        ship = f_ship
+    else:
+        ship = n_ship
+    # apply friction to the ship
+    if vel_x > 0:
+        vel_x = max(0, vel_x - FRICTION)
+    if vel_x < 0:
+        vel_x = min(0, vel_x + FRICTION)
+    if vel_y > 0:
+        vel_y = max(0, vel_y - FRICTION)
+    if vel_y < 0:
+        vel_y = min(0, vel_y + FRICTION)
+    # set a maximum velocity to the ship
+    vel_x = min(vel_x, MAX_VEL*dt)
+    vel_x = max(vel_x, -MAX_VEL*dt)
+    vel_y = min(vel_y, MAX_VEL*dt)
+    vel_y = max(vel_y, -MAX_VEL*dt)
+    # update ship position
+    ship_x = (ship_x + vel_x) % (WIDTH + SHIP_WIDTH)
+    ship_y = (ship_y - vel_y) % (HEIGHT + SHIP_HEIGHT)
+    # update bullets position and delete the ones that have reached the maximum distance
+    bull_index = -1
+    bull_del = []  # list of bullets indexes to be deleted
+    for bull in bullets:
+        bull_index += 1
+        if bull['d'] > bullet_max:
+            bull_del.append(bull_index)
+        bull['x'] = (bull['x'] + BULLET_VEL*dt * math.cos(PI*bull['ang']/180)) % WIDTH
+        bull['y'] = (bull['y'] - BULLET_VEL*dt * math.sin(PI*bull['ang']/180)) % HEIGHT
+        bull['d'] += BULLET_VEL*dt
+        bull['rect'] = bullet.get_rect(topleft=(bull['x'], bull['y']))
+    for bull in bull_del[::-1]:
+        del bullets[bull]
     # handle collisions with asteroids (from both bullets and the ship)
-    color = (0, 255, 0)
     ship_rect = rot_ship.get_rect(center=(ship_x-SHIP_WIDTH/2, ship_y-SHIP_HEIGHT/2))
     ast_index = -1
     ast_del = []  # list of asteroids indexes to be deleted
