@@ -75,6 +75,7 @@ def start_screen():  # displays a start screen and returns the 'running' value
 
 
 def pause():  # displays a pause screen and returns the 'running' value
+    pygame.mixer.stop()
     pause_message = large_font.render('PAUSE', True, (255, 255, 255))
     info_message = font.render('Press q to quit or p to continue.', True, (255, 255, 255))
     display.blit(pause_message, pause_message.get_rect(center=(WIDTH/2, HEIGHT/2 - 40)))
@@ -92,6 +93,7 @@ def pause():  # displays a pause screen and returns the 'running' value
 
 
 def game_over():  # displays a game over screen and returns the 'running' value
+    pygame.mixer.stop()
     over_sound.play()
     over_message = large_font.render('GAME OVER', True, (255, 255, 255))
     info_message = font.render('Press q to quit or r to restart.', True, (255, 255, 255))
@@ -240,6 +242,7 @@ while running:
             pygame.time.set_timer(NEW_LEVEL, 0)
         if event.type == NEW_TRY:
             if len(asteroids) == 0:
+                start_lvl_sound.play()
                 level += 1
                 asteroids = set_level(level)
             pygame.time.set_timer(PROTECTION, 300)
