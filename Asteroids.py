@@ -1,7 +1,6 @@
 import pygame
 import math
 import random
-PI = math.pi
 
 
 def rand_x():  # returns a random x coordinate within the game display
@@ -144,6 +143,7 @@ NEW_LEVEL = 25
 NEW_TRY = 26
 PROTECTION = 27
 # set constants
+PI = math.pi
 ANG_VEL = 0.3
 ACCEL = 0.008
 MAX_VEL = 0.4
@@ -310,7 +310,7 @@ while running:
         changing = True
         level += 1
         pygame.time.set_timer(NEW_LEVEL, 2000)
-    # display every thing on the screen
+    # render every thing on the screen
     rot_ship = pygame.transform.rotate(ship, angle)
     dw = rot_ship.get_width() - SHIP_WIDTH
     dh = rot_ship.get_height() - SHIP_HEIGHT
