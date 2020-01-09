@@ -158,6 +158,7 @@ bullets = []
 bullet_max = 350
 level = 1
 score = 0
+prev_score = 0
 lives = 3
 t_blink = 0
 changing = True
@@ -304,7 +305,10 @@ while running:
                 pygame.time.set_timer(NEW_TRY, 2000)
             break
     if len(ast_del) != 0:
+        prev_score = score
         asteroids, score = break_ast(asteroids, ast_del, score)
+        if prev_score//10000 != score//10000:
+            lives += 1
     # start a new level when there are no asteroids
     if len(asteroids) == 0 and not changing and lives > 0:
         changing = True
