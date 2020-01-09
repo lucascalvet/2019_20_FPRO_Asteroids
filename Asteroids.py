@@ -136,6 +136,7 @@ over_sound = pygame.mixer.Sound('over.ogg')
 start_sound = pygame.mixer.Sound('start.ogg')
 thruster_sound = pygame.mixer.Sound('thruster.ogg')
 start_lvl_sound = pygame.mixer.Sound('start_level.ogg')
+new_life_sound = pygame.mixer.Sound('new_life.ogg')
 font_list = 'Corbel, Courier 10 Pitc, FreeMono, Garuda'
 font = pygame.font.SysFont(font_list, 30, bold=True, italic=False)
 large_font = pygame.font.SysFont(font_list, 60, bold=True, italic=False)
@@ -319,6 +320,7 @@ while running:
         prev_score = score
         asteroids, score = break_ast(asteroids, ast_del, score)
         if prev_score//10000 != score//10000:
+            new_life_sound.play()
             lives += 1
     # start a new level when there are no asteroids
     if len(asteroids) == 0 and not changing and lives > 0:
