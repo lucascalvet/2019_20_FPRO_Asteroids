@@ -78,6 +78,10 @@ def pause():  # displays a pause screen and returns the 'running' value
     pygame.mixer.stop()
     pause_message = large_font.render('PAUSE', True, (255, 255, 255))
     info_message = font.render('Press q to quit or p to continue.', True, (255, 255, 255))
+    bg = pygame.Surface((WIDTH, HEIGHT))
+    bg.set_alpha(150)
+    bg.fill((0, 0, 0))
+    display.blit(bg ,(0,0))
     display.blit(pause_message, pause_message.get_rect(center=(WIDTH/2, HEIGHT/2 - 40)))
     display.blit(info_message, info_message.get_rect(center=(WIDTH/2, HEIGHT/2 + 40)))
     pygame.display.flip()
@@ -110,7 +114,6 @@ def game_over():  # displays a game over screen and returns the 'running' value
                 if event.key == pygame.K_r:
                     over_sound.stop()
                     return True
-
 
 pygame.init()
 WIDTH = 800
@@ -180,6 +183,9 @@ while running:
     if paused:
         dt = 30  # reset dt if the game was paused in the previous loop
         paused = False
+    if not pygame.display.get_active():
+        running = pause()
+        paused = True
     # handle events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -235,7 +241,11 @@ while running:
                 paused = True
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_UP:
-                thruster_sound.fadeout(500)                                           
+                thruster_sound.fadeout(500)    
+        if event.type == pygame.ACTIVEEVENT:
+            if event.state == 2 and event.gain == 0:
+                running = pause()
+                paused = True
 #    pygame.display.set_caption('FPS: ' + str(clock.get_fps()))
     # monitor the left, right and up keys
     keys = pygame.key.get_pressed()
@@ -320,7 +330,7 @@ while running:
     dh = rot_ship.get_height() - SHIP_HEIGHT
     display.fill((0, 0, 0))
     for star in stars:
-        pygame.draw.circle(display, (255, 255, 175), (star[0], star[1]), 2)
+        pygame.draw.circle(display, (180, 180, 180), (star[0], star[1]), 2)
     for bull in bullets:
         display.blit(bullet, (bull['x'], bull['y']))
     for ast in asteroids:
