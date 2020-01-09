@@ -171,7 +171,7 @@ paused = False
 stars = [(rand_x(), rand_y()) for _ in range(100)]
 # window configuration
 display = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_icon(small_ast)
+pygame.display.set_icon(big_ast)
 pygame.display.set_caption('Asteroids')
 
 running = start_screen()  # show the start screen
