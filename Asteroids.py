@@ -1,6 +1,7 @@
 import pygame
 import math
 import random
+PI = math.pi
 
 
 def rand_x():  # returns a random x coordinate within the game display
@@ -143,7 +144,6 @@ NEW_LEVEL = 25
 NEW_TRY = 26
 PROTECTION = 27
 # set constants
-PI = math.pi
 ANG_VEL = 0.3
 ACCEL = 0.008
 MAX_VEL = 0.4
