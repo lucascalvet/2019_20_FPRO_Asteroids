@@ -78,9 +78,6 @@ def pause():  # displays a pause screen and returns the 'running' value
     pygame.mixer.stop()
     pause_message = large_font.render('PAUSE', True, (255, 255, 255))
     info_message = font.render('Press q to quit or p to continue.', True, (255, 255, 255))
-    bg = pygame.Surface((WIDTH, HEIGHT))
-    bg.set_alpha(150)
-    bg.fill((0, 0, 0))
     display.blit(bg ,(0,0))
     display.blit(pause_message, pause_message.get_rect(center=(WIDTH/2, HEIGHT/2 - 40)))
     display.blit(info_message, info_message.get_rect(center=(WIDTH/2, HEIGHT/2 + 40)))
@@ -101,6 +98,7 @@ def game_over():  # displays a game over screen and returns the 'running' value
     over_sound.play()
     over_message = large_font.render('GAME OVER', True, (255, 255, 255))
     info_message = font.render('Press q to quit or r to restart.', True, (255, 255, 255))
+    display.blit(bg ,(0,0))
     display.blit(over_message, over_message.get_rect(center=(WIDTH/2, HEIGHT/2 - 40)))
     display.blit(info_message, info_message.get_rect(center=(WIDTH/2, HEIGHT/2 + 40)))
     pygame.display.flip()
@@ -173,6 +171,9 @@ stars = [(rand_x(), rand_y()) for _ in range(100)]
 display = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_icon(big_ast)
 pygame.display.set_caption('Asteroids')
+bg = pygame.Surface((WIDTH, HEIGHT))
+bg.set_alpha(150)
+bg.fill((0, 0, 0))
 
 running = start_screen()  # show the start screen
 clock = pygame.time.Clock()  # initialize the clock
