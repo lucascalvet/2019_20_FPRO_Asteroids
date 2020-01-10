@@ -76,7 +76,7 @@ def start_screen():  # displays a start screen and returns the 'running' value
 
 def pause():  # displays a pause screen and returns the 'running' value
     pygame.mixer.stop()
-    pause_message = large_font.render('PAUSE', True, (255, 255, 255))
+    pause_message = large_font.render('PAUSED', True, (255, 255, 255))
     info_message = font.render('Press q to quit or p to continue.', True, (255, 255, 255))
     display.blit(bg ,(0,0))
     display.blit(pause_message, pause_message.get_rect(center=(WIDTH/2, HEIGHT/2 - 40)))
